@@ -1,0 +1,6 @@
+{
+  "name": "교사용 주차별 진도표 관리 시스템",
+  "description": "주차별 공통 진도 계획표 및 분반별 실제 진도 기록과 데이터베이스 영구 저장 관리 시스템",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

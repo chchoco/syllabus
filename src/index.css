@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+@layer utilities {
+  /* 주차 구분 굵은 경계선 스타일 (HTML Table 테두리 충돌 방지) */
+  .week-divider > td {
+    border-top: 3px solid #0f172a !important;
+  }
+
+  /* Custom scrollbar for table */
+  .table-scroll::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+  }
+  .table-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  .table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  body {
+    background-color: white !important;
+    font-size: 11px !important;
+    color: black !important;
+  }
+  .print-table th,
+  .print-table td {
+    padding: 4px 6px !important;
+    border: 1px solid #000 !important;
+  }
+  .week-divider > td {
+    border-top: 2.5px solid #000000 !important;
+  }
+}
+
+.print-only {
+  display: none;
+}
+
