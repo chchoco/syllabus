@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { 
   fetchProgressDatabase, 
   saveProgressDatabase, 
-  resetProgressDatabase 
+  resetProgressDatabase,
+  subscribeToFirestore 
 } from './services/api';
 import { 
   AppDatabaseState, 
@@ -47,9 +48,10 @@ export default function App() {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<string | undefined>();
   const isInitialLoaded = useRef(false);
+  const isRemoteSyncing = useRef(false);
   const saveTimeoutRef = useRef<any>(null);
 
-  // 1. Initial Load from Database API / Cache
+  // 1. Initial Load & Real-time Cloud Database Subscription across multiple devices
   useEffect(() => {
     async function loadData() {
       try {
@@ -73,11 +75,36 @@ export default function App() {
       }
     }
     loadData();
+
+    // Subscribe to real-time changes from other devices/browsers
+    const unsubscribe = subscribeToFirestore((cloudData) => {
+      if (cloudData && isInitialLoaded.current) {
+        isRemoteSyncing.current = true;
+        if (cloudData.subjectName) setSubjectName(cloudData.subjectName);
+        if (cloudData.teacherName) setTeacherName(cloudData.teacherName);
+        if (cloudData.schoolYear) setSchoolYear(cloudData.schoolYear);
+        if (cloudData.startDate) setStartDate(cloudData.startDate);
+        if (cloudData.endDate) setEndDate(cloudData.endDate);
+        if (cloudData.classes) setClasses(cloudData.classes);
+        if (cloudData.progressData) setProgressData(cloudData.progressData);
+        if (cloudData.planData) setPlanData(cloudData.planData);
+        if (cloudData.customExclusions) setCustomExclusions(cloudData.customExclusions);
+        if (cloudData.lastSavedAt) setLastSavedAt(cloudData.lastSavedAt);
+        
+        setTimeout(() => {
+          isRemoteSyncing.current = false;
+        }, 300);
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
-  // 2. Auto-save to Database when state changes (debounced by 600ms)
+  // 2. Auto-save to Cloud Database when local state changes (debounced by 500ms)
   useEffect(() => {
-    if (!isInitialLoaded.current) return;
+    if (!isInitialLoaded.current || isRemoteSyncing.current) return;
 
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
@@ -105,7 +132,7 @@ export default function App() {
       } else {
         setSaveStatus('error');
       }
-    }, 600);
+    }, 500);
 
     return () => {
       if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);

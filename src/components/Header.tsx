@@ -101,19 +101,23 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </div>
 
-          {/* Database Sync Status Badge */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200" title={lastSavedAt ? `최근 DB 동기화: ${new Date(lastSavedAt).toLocaleTimeString()}` : ''}>
+          {/* Cloud Database Sync Status Badge */}
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-300 shadow-2xs" title={lastSavedAt ? `클라우드 DB 동기화 완료: ${new Date(lastSavedAt).toLocaleTimeString()}` : '클라우드 DB 실시간 동기화 상태'}>
             {saveStatus === 'saving' ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-600" />
-                <span className="text-indigo-700 font-semibold">DB 동기화 중...</span>
+                <span className="text-indigo-700 font-bold">클라우드 동기화 중...</span>
               </>
             ) : saveStatus === 'error' ? (
-              <span className="text-rose-600 font-semibold">저장 대기 (로컬 캐시됨)</span>
+              <span className="text-rose-600 font-bold">로컬 저장됨 (오프라인)</span>
             ) : (
               <>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                <span className="font-semibold">DB 실시간 저장됨</span>
+                <span className="font-bold">클라우드 DB 실시간 동기화</span>
               </>
             )}
           </div>
